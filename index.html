@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<title>Server status monitor</title>
+    <link href="css/main.css" rel="stylesheet">
+</head>
+<script>
+    function checkGroup(groupId) {
+        var xml = new XMLHttpRequest();
+        xml.open('GET', './Servers/Servers.php?group=' + groupId);
+        xml.onreadystatechange = function () {
+            if (!(xml.status == 200 && xml.readyState == 4))
+                return;
+
+            var json = JSON.parse(xml.responseText);
+            for (var i of json) {
+                //tr.innerHTML = '<td>' + i.location + '</td><td></td>';
+                //document.querySelector('table.table tbody').appendChild(tr);
+                for (var j of i.serviceStatus) {
+                    var tr = document.createElement('tr');
+                    if (j[1] === "Online") {
+                        tr.innerHTML = '<td>' + i.location + '</td><td>' + j[0] + '<div class="online">' + j[1] + '</div></td>';
+                    } else {
+                        tr.innerHTML = '<td>' + i.location + '</td><td>' + j[0] + '<div class="offline">' + j[1] + '</div></td>';
+                    }
+                    i.location = '';
+                    document.querySelector('table.table' + groupId + ' tbody').appendChild(tr);
+                }
+            }
+        };
+        xml.send();
+    }
+</script>
+<body>
+	<header>
+		<h3>Service status | Copyright &copy; 2018 HTroy.All Rights Reserved.</h3>
+	</header>
+    <!-- Copy This Area If You Have More Than One Group-->
+	<div class="wrap">
+        <!-- Change Group Name Here -->
+        <h3 class="group-title">America group</h3>
+		<table class="table1 table">
+			<tbody>
+				<tr><td>Server</td><td>Status</td></tr>
+                <script>checkGroup(1)</script>
+			</tbody>
+		</table>
+	</div>
+    <!-- Copy This Area If You Have More Than One Group -->
+</body>
+</html>
